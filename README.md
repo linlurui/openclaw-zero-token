@@ -43,7 +43,7 @@ OpenClaw Zero Token is a fork of [OpenClaw](https://github.com/openclaw/openclaw
 
 ```bash
 # 1. Build
-npm install && npm run build
+npm install && npm run build && pnpm ui:build
 
 # 2. Open browser debug
 ./start-chrome-debug.sh

@@ -25,6 +25,7 @@
 # 1. 编译
 npm install
 npm run build
+pnpm ui:build   # 构建 Web UI
 
 # 2. 打开浏览器调试
 ./start-chrome-debug.sh
