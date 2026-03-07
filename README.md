@@ -57,6 +57,12 @@ All supported models can call **local tools** (e.g. exec, read_file, list_dir, b
 
 The agent’s file access is limited to the configured **workspace** directory (see `agents.defaults.workspace` in config). For details and verification steps, see **[docs/TOOL_CALLING_MODELS.md](docs/TOOL_CALLING_MODELS.md)**.
 
+### Additional Features
+
+**Ask once, get answers from all AI models.** — AskOnce lets you query multiple configured AI models at once and compare their responses in a single view.
+
+![AskOnce - Ask once, get answers from all AI models](askonce.png)
+
 ### Setup Steps (6 Steps)
 
 ```bash
