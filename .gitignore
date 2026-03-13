@@ -17,11 +17,17 @@ __pycache__/
 ui/src/ui/__screenshots__/
 ui/playwright-report/
 ui/test-results/
+packages/dashboard-next/.next/
+packages/dashboard-next/out/
+
+# Mise configuration files
+mise.toml
 
 # Android build artifacts
 apps/android/.gradle/
 apps/android/app/build/
 apps/android/.cxx/
+apps/android/.kotlin/
 
 # Bun build artifacts
 *.bun-build
@@ -116,7 +122,11 @@ dev-debug.sh
 !.agent/workflows/
 /local/
 package-lock.json
-.claude/settings.local.json
+.claude/
+.agents/
+.agents
+.agent/
+skills-lock.json
 
 # Local iOS signing overrides
 apps/ios/LocalSigning.xcconfig

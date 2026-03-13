@@ -4,7 +4,9 @@ type OnboardProviderAuthOptionKey = keyof Pick<
   OnboardOptions,
   | "anthropicApiKey"
   | "openaiApiKey"
+  | "mistralApiKey"
   | "openrouterApiKey"
+  | "kilocodeApiKey"
   | "aiGatewayApiKey"
   | "cloudflareAiGatewayApiKey"
   | "moonshotApiKey"
@@ -18,6 +20,7 @@ type OnboardProviderAuthOptionKey = keyof Pick<
   | "togetherApiKey"
   | "huggingfaceApiKey"
   | "opencodeZenApiKey"
+  | "opencodeGoApiKey"
   | "xaiApiKey"
   | "litellmApiKey"
   | "qianfanApiKey"
@@ -51,11 +54,25 @@ export const ONBOARD_PROVIDER_AUTH_FLAGS: ReadonlyArray<OnboardProviderAuthFlag>
     description: "OpenAI API key",
   },
   {
+    optionKey: "mistralApiKey",
+    authChoice: "mistral-api-key",
+    cliFlag: "--mistral-api-key",
+    cliOption: "--mistral-api-key <key>",
+    description: "Mistral API key",
+  },
+  {
     optionKey: "openrouterApiKey",
     authChoice: "openrouter-api-key",
     cliFlag: "--openrouter-api-key",
     cliOption: "--openrouter-api-key <key>",
     description: "OpenRouter API key",
+  },
+  {
+    optionKey: "kilocodeApiKey",
+    authChoice: "kilocode-api-key",
+    cliFlag: "--kilocode-api-key",
+    cliOption: "--kilocode-api-key <key>",
+    description: "Kilo Gateway API key",
   },
   {
     optionKey: "aiGatewayApiKey",
@@ -146,7 +163,14 @@ export const ONBOARD_PROVIDER_AUTH_FLAGS: ReadonlyArray<OnboardProviderAuthFlag>
     authChoice: "opencode-zen",
     cliFlag: "--opencode-zen-api-key",
     cliOption: "--opencode-zen-api-key <key>",
-    description: "OpenCode Zen API key",
+    description: "OpenCode API key (Zen catalog)",
+  },
+  {
+    optionKey: "opencodeGoApiKey",
+    authChoice: "opencode-go",
+    cliFlag: "--opencode-go-api-key",
+    cliOption: "--opencode-go-api-key <key>",
+    description: "OpenCode API key (Go catalog)",
   },
   {
     optionKey: "xaiApiKey",

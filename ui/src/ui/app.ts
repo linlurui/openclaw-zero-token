@@ -48,10 +48,12 @@ import {
   resetToolStream as resetToolStreamInternal,
   type ToolStreamEntry,
   type CompactionStatus,
+  type FallbackStatus,
 } from "./app-tool-stream.ts";
 import type { AppViewState } from "./app-view-state.ts";
 import { normalizeAssistantIdentity } from "./assistant-identity.ts";
 import { loadAssistantIdentity as loadAssistantIdentityInternal } from "./controllers/assistant-identity.ts";
+import type { CronFieldErrors } from "./controllers/cron.ts";
 import type { DevicePairingList } from "./controllers/devices.ts";
 import type { ExecApprovalRequest } from "./controllers/exec-approval.ts";
 import type { ExecApprovalsFile, ExecApprovalsSnapshot } from "./controllers/exec-approvals.ts";
@@ -76,10 +78,12 @@ import type {
   ChannelsStatusSnapshot,
   SessionsListResult,
   SkillStatusReport,
+  ToolsCatalogResult,
   StatusSummary,
   NostrProfile,
 } from "./types.ts";
 import { type ChatAttachment, type ChatQueueItem, type CronFormState } from "./ui-types.ts";
+import { generateUUID } from "./uuid.ts";
 import type { NostrProfileFormState } from "./views/channels.nostr-profile-form.ts";
 
 declare global {
@@ -292,13 +296,40 @@ export class OpenClawApp extends LitElement {
   usageQueryDebounceTimer: number | null = null;
 
   @state() accessor cronLoading = false;
+  @state() accessor cronJobsLoadingMore = false;
   @state() accessor cronJobs: CronJob[] = [];
+  @state() accessor cronJobsTotal = 0;
+  @state() accessor cronJobsHasMore = false;
+  @state() accessor cronJobsNextOffset: number | null = null;
+  @state() accessor cronJobsLimit = 50;
+  @state() accessor cronJobsQuery = "";
+  @state() accessor cronJobsEnabledFilter: import("./types.js").CronJobsEnabledFilter = "all";
+  @state() accessor cronJobsScheduleKindFilter: import("./controllers/cron.js").CronJobsScheduleKindFilter =
+    "all";
+  @state() accessor cronJobsLastStatusFilter: import("./controllers/cron.js").CronJobsLastStatusFilter =
+    "all";
+  @state() accessor cronJobsSortBy: import("./types.js").CronJobsSortBy = "nextRunAtMs";
+  @state() accessor cronJobsSortDir: import("./types.js").CronSortDir = "asc";
   @state() accessor cronStatus: CronStatus | null = null;
   @state() accessor cronError: string | null = null;
   @state() accessor cronForm: CronFormState = { ...DEFAULT_CRON_FORM };
+  @state() accessor cronFieldErrors: CronFieldErrors = {};
+  @state() accessor cronEditingJobId: string | null = null;
   @state() accessor cronRunsJobId: string | null = null;
+  @state() accessor cronRunsLoadingMore = false;
   @state() accessor cronRuns: CronRunLogEntry[] = [];
+  @state() accessor cronRunsTotal = 0;
+  @state() accessor cronRunsHasMore = false;
+  @state() accessor cronRunsNextOffset: number | null = null;
+  @state() accessor cronRunsLimit = 50;
+  @state() accessor cronRunsScope: import("./types.js").CronRunScope = "all";
+  @state() accessor cronRunsStatuses: import("./types.js").CronRunsStatusValue[] = [];
+  @state() accessor cronRunsDeliveryStatuses: import("./types.js").CronDeliveryStatus[] = [];
+  @state() accessor cronRunsStatusFilter: import("./types.js").CronRunsStatusFilter = "all";
+  @state() accessor cronRunsQuery = "";
+  @state() accessor cronRunsSortDir: import("./types.js").CronSortDir = "desc";
   @state() accessor cronBusy = false;
+  @state() accessor cronModelSuggestions: string[] = [];
 
   @state() accessor updateAvailable: import("./types.js").UpdateAvailable | null = null;
 
@@ -335,6 +366,10 @@ export class OpenClawApp extends LitElement {
   @state() accessor logsLimit = 500;
   @state() accessor logsMaxBytes = 250_000;
   @state() accessor logsAtBottom = true;
+
+  // Service control state
+  @state() accessor serviceBusy = false;
+  @state() accessor serviceMessage: string | null = null;
 
   // AskOnce state
   @state() accessor askonceModelsLoading = false;
@@ -386,6 +421,51 @@ export class OpenClawApp extends LitElement {
 
   protected updated(changed: Map<PropertyKey, unknown>) {
     handleUpdated(this as unknown as Parameters<typeof handleUpdated>[0], changed);
+  }
+
+  async handleServiceRestart() {
+    if (this.serviceBusy) return;
+    this.serviceBusy = true;
+    this.serviceMessage = null;
+    
+    try {
+      await this.client?.request("gateway.restart", { reason: "ui" });
+      this.serviceMessage = t("overview.service.restartWaiting");
+      
+      // 延时检测连接恢复
+      const checkReconnect = async (attempts: number): Promise<void> => {
+        if (attempts <= 0) {
+          this.serviceMessage = t("overview.service.restartTimeout");
+          this.serviceBusy = false;
+          return;
+        }
+        
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        
+        try {
+          // 尝试重新连接
+          this.connect();
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          
+          if (this.connected) {
+            this.serviceMessage = t("overview.service.restartSuccess");
+            this.serviceBusy = false;
+            return;
+          }
+        } catch {
+          // 继续重试
+        }
+        
+        await checkReconnect(attempts - 1);
+      };
+      
+      // 等待 3 秒后开始检测，最多尝试 10 次
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await checkReconnect(10);
+    } catch (err) {
+      this.serviceMessage = String(err);
+      this.serviceBusy = false;
+    }
   }
 
   connect() {
@@ -542,16 +622,20 @@ export class OpenClawApp extends LitElement {
     if (!nextGatewayUrl) {
       return;
     }
+    const nextToken = this.pendingGatewayToken?.trim() || "";
     this.pendingGatewayUrl = null;
+    this.pendingGatewayToken = null;
     applySettingsInternal(this as unknown as Parameters<typeof applySettingsInternal>[0], {
       ...this.settings,
       gatewayUrl: nextGatewayUrl,
+      token: nextToken,
     });
     this.connect();
   }
 
   handleGatewayUrlCancel() {
     this.pendingGatewayUrl = null;
+    this.pendingGatewayToken = null;
   }
 
   // Sidebar handlers for tool output viewing

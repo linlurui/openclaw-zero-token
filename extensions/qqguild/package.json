@@ -1,0 +1,32 @@
+{
+  "name": "@openclaw/qqguild",
+  "version": "0.0.1",
+  "description": "QQ Guild (QQ频道) channel extension for OpenClaw",
+  "type": "module",
+  "main": "./dist/plugin.js",
+  "types": "./dist/plugin.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/plugin.js",
+      "types": "./dist/plugin.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "openclaw": "workspace:*"
+  },
+  "keywords": [
+    "openclaw",
+    "qqguild",
+    "QQ频道",
+    "channel"
+  ],
+  "license": "MIT"
+}

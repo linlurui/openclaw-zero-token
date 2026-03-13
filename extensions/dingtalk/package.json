@@ -1,0 +1,35 @@
+{
+  "name": "@openclaw/dingtalk",
+  "version": "0.0.1",
+  "description": "DingTalk (钉钉) channel extension for OpenClaw",
+  "type": "module",
+  "main": "./dist/plugin.js",
+  "types": "./dist/plugin.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/plugin.js",
+      "types": "./dist/plugin.d.ts"
+    }
+  },
+  "openclaw": {
+    "extensions": ["./src/index.ts"]
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "openclaw": "workspace:*"
+  },
+  "keywords": [
+    "openclaw",
+    "dingtalk",
+    "钉钉",
+    "channel"
+  ],
+  "license": "MIT"
+}

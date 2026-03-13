@@ -1,0 +1,65 @@
+{
+  "id": "wecom",
+  "name": "WeCom (企业微信)",
+  "version": "0.0.1",
+  "description": "WeCom channel for OpenClaw",
+  "main": "src/plugin.ts",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "accounts": {
+        "type": "object",
+        "description": "企业微信账户配置",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "corpId": {
+              "type": "string",
+              "description": "企业 ID"
+            },
+            "agentId": {
+              "type": "string",
+              "description": "应用 ID"
+            },
+            "secret": {
+              "type": "string",
+              "description": "应用密钥"
+            },
+            "token": {
+              "type": "string",
+              "description": "回调 Token (可选)"
+            },
+            "encodingAESKey": {
+              "type": "string",
+              "description": "消息加密密钥 (可选)"
+            },
+            "enabled": {
+              "type": "boolean",
+              "description": "是否启用",
+              "default": true
+            },
+            "connectionMode": {
+              "type": "string",
+              "enum": ["webhook", "websocket"],
+              "description": "连接模式",
+              "default": "webhook"
+            },
+            "dmPolicy": {
+              "type": "string",
+              "enum": ["all", "paired", "none"],
+              "description": "私聊策略",
+              "default": "paired"
+            },
+            "groupPolicy": {
+              "type": "string",
+              "enum": ["mention", "all"],
+              "description": "群聊策略",
+              "default": "mention"
+            }
+          },
+          "required": ["corpId", "agentId", "secret"]
+        }
+      }
+    }
+  }
+}

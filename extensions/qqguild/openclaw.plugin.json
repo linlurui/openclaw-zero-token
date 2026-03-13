@@ -1,0 +1,56 @@
+{
+  "id": "qqguild",
+  "name": "QQ Guild (QQ频道)",
+  "version": "0.0.1",
+  "description": "QQ Guild channel for OpenClaw",
+  "main": "src/plugin.ts",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "accounts": {
+        "type": "object",
+        "description": "QQ 频道账户配置",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "appId": {
+              "type": "string",
+              "description": "机器人 App ID"
+            },
+            "appSecret": {
+              "type": "string",
+              "description": "机器人 App Secret"
+            },
+            "token": {
+              "type": "string",
+              "description": "机器人 Token (可选)"
+            },
+            "enabled": {
+              "type": "boolean",
+              "description": "是否启用",
+              "default": true
+            },
+            "sandbox": {
+              "type": "boolean",
+              "description": "是否使用沙箱环境",
+              "default": false
+            },
+            "dmPolicy": {
+              "type": "string",
+              "enum": ["all", "paired", "none"],
+              "description": "私聊策略",
+              "default": "paired"
+            },
+            "groupPolicy": {
+              "type": "string",
+              "enum": ["mention", "all"],
+              "description": "频道策略",
+              "default": "mention"
+            }
+          },
+          "required": ["appId", "appSecret"]
+        }
+      }
+    }
+  }
+}

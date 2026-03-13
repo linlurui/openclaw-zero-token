@@ -1,0 +1,57 @@
+{
+  "id": "dingtalk",
+  "name": "DingTalk (钉钉)",
+  "version": "0.0.1",
+  "description": "DingTalk channel for OpenClaw",
+  "main": "src/plugin.ts",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "accounts": {
+        "type": "object",
+        "description": "钉钉账户配置",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "appKey": {
+              "type": "string",
+              "description": "应用 AppKey"
+            },
+            "appSecret": {
+              "type": "string",
+              "description": "应用 AppSecret"
+            },
+            "agentId": {
+              "type": "string",
+              "description": "应用 AgentId"
+            },
+            "enabled": {
+              "type": "boolean",
+              "description": "是否启用",
+              "default": true
+            },
+            "connectionMode": {
+              "type": "string",
+              "enum": ["webhook", "stream"],
+              "description": "连接模式",
+              "default": "webhook"
+            },
+            "dmPolicy": {
+              "type": "string",
+              "enum": ["all", "paired", "none"],
+              "description": "私聊策略",
+              "default": "paired"
+            },
+            "groupPolicy": {
+              "type": "string",
+              "enum": ["mention", "all"],
+              "description": "群聊策略",
+              "default": "mention"
+            }
+          },
+          "required": ["appKey", "appSecret", "agentId"]
+        }
+      }
+    }
+  }
+}

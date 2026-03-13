@@ -1,0 +1,35 @@
+{
+  "name": "@openclaw/wecom",
+  "version": "0.0.1",
+  "description": "WeCom (企业微信) channel extension for OpenClaw",
+  "type": "module",
+  "main": "./dist/plugin.js",
+  "types": "./dist/plugin.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/plugin.js",
+      "types": "./dist/plugin.d.ts"
+    }
+  },
+  "openclaw": {
+    "extensions": ["./src/index.ts"]
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "openclaw": "workspace:*"
+  },
+  "keywords": [
+    "openclaw",
+    "wecom",
+    "企业微信",
+    "channel"
+  ],
+  "license": "MIT"
+}

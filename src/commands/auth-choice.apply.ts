@@ -17,15 +17,16 @@ import { applyAuthChoiceCopilotProxy } from "./auth-choice.apply.copilot-proxy.j
 import { applyAuthChoiceDeepseekWeb } from "./auth-choice.apply.deepseek-web.js";
 import { applyAuthChoiceDoubaoWeb } from "./auth-choice.apply.doubao-web.js";
 import { applyAuthChoiceGitHubCopilot } from "./auth-choice.apply.github-copilot.js";
-import { applyAuthChoiceGoogleAntigravity } from "./auth-choice.apply.google-antigravity.js";
 import { applyAuthChoiceGoogleGeminiCli } from "./auth-choice.apply.google-gemini-cli.js";
 import { applyAuthChoiceMiniMax } from "./auth-choice.apply.minimax.js";
 import { applyAuthChoiceOAuth } from "./auth-choice.apply.oauth.js";
+import { applyAuthChoiceOllama } from "./auth-choice.apply.ollama.js";
 import { applyAuthChoiceOpenAI } from "./auth-choice.apply.openai.js";
 import { applyAuthChoiceQwenPortal } from "./auth-choice.apply.qwen-portal.js";
 import { applyAuthChoiceVllm } from "./auth-choice.apply.vllm.js";
+import { applyAuthChoiceVolcengine } from "./auth-choice.apply.volcengine.js";
 import { applyAuthChoiceXAI } from "./auth-choice.apply.xai.js";
-import type { AuthChoice } from "./onboard-types.js";
+import type { AuthChoice, OnboardOptions } from "./onboard-types.js";
 
 export type ApplyAuthChoiceParams = {
   authChoice: AuthChoice;
@@ -70,12 +71,12 @@ export async function applyAuthChoice(
   const handlers: Array<(p: ApplyAuthChoiceParams) => Promise<ApplyAuthChoiceResult | null>> = [
     applyAuthChoiceAnthropic,
     applyAuthChoiceVllm,
+    applyAuthChoiceOllama,
     applyAuthChoiceOpenAI,
     applyAuthChoiceOAuth,
     applyAuthChoiceApiProviders,
     applyAuthChoiceMiniMax,
     applyAuthChoiceGitHubCopilot,
-    applyAuthChoiceGoogleAntigravity,
     applyAuthChoiceGoogleGeminiCli,
     applyAuthChoiceCopilotProxy,
     applyAuthChoiceQwenPortal,
@@ -92,6 +93,8 @@ export async function applyAuthChoice(
     applyAuthChoiceGlmIntlWeb,
     applyAuthChoiceManusApi,
     applyAuthChoiceXAI,
+    applyAuthChoiceVolcengine,
+    applyAuthChoiceBytePlus,
   ];
 
   for (const handler of handlers) {

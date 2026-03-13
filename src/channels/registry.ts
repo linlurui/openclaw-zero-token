@@ -13,13 +13,15 @@ export const CHAT_CHANNEL_ORDER = [
   "slack",
   "signal",
   "imessage",
+  "line",
+  "wecom",
+  "dingtalk",
+  "qqguild",
 ] as const;
 
 export type ChatChannelId = (typeof CHAT_CHANNEL_ORDER)[number];
 
 export const CHANNEL_IDS = [...CHAT_CHANNEL_ORDER] as const;
-
-export const DEFAULT_CHAT_CHANNEL: ChatChannelId = "whatsapp";
 
 export type ChatChannelMeta = ChannelMeta;
 
@@ -109,6 +111,49 @@ const CHAT_CHANNEL_META: Record<ChatChannelId, ChannelMeta> = {
     blurb: "this is still a work in progress.",
     systemImage: "message.fill",
   },
+  line: {
+    id: "line",
+    label: "LINE",
+    selectionLabel: "LINE (Messaging API)",
+    detailLabel: "LINE Bot",
+    docsPath: "/channels/line",
+    docsLabel: "line",
+    blurb: "LINE Messaging API webhook bot.",
+    systemImage: "message",
+  },
+  wecom: {
+    id: "wecom",
+    label: "WeCom",
+    selectionLabel: "WeCom (企业微信)",
+    detailLabel: "WeCom Bot",
+    docsPath: "/channels/wecom",
+    docsLabel: "wecom",
+    blurb: "企业微信应用消息推送，支持文本、Markdown、卡片消息。",
+    systemImage: "message",
+    aliases: ["企业微信", "qywx", "work_wechat"],
+  },
+  dingtalk: {
+    id: "dingtalk",
+    label: "DingTalk",
+    selectionLabel: "DingTalk (钉钉)",
+    detailLabel: "DingTalk Bot",
+    docsPath: "/channels/dingtalk",
+    docsLabel: "dingtalk",
+    blurb: "钉钉企业应用消息推送，支持文本、Markdown、OA 消息。",
+    systemImage: "message",
+    aliases: ["钉钉", "dd", "dingding"],
+  },
+  qqguild: {
+    id: "qqguild",
+    label: "QQ Guild",
+    selectionLabel: "QQ Guild (QQ频道)",
+    detailLabel: "QQ Guild Bot",
+    docsPath: "/channels/qqguild",
+    docsLabel: "qqguild",
+    blurb: "QQ 频道机器人，支持文本、Embed、Markdown 消息。",
+    systemImage: "bubble.left.and.bubble.right",
+    aliases: ["QQ频道", "qq频道", "qqchannel"],
+  },
 };
 
 export const CHAT_CHANNEL_ALIASES: Record<string, ChatChannelId> = {
@@ -116,6 +161,15 @@ export const CHAT_CHANNEL_ALIASES: Record<string, ChatChannelId> = {
   "internet-relay-chat": "irc",
   "google-chat": "googlechat",
   gchat: "googlechat",
+  企业微信: "wecom",
+  qywx: "wecom",
+  work_wechat: "wecom",
+  钉钉: "dingtalk",
+  dd: "dingtalk",
+  dingding: "dingtalk",
+  QQ频道: "qqguild",
+  "qq频道": "qqguild",
+  qqchannel: "qqguild",
 };
 
 const normalizeChannelKey = (raw?: string | null): string | undefined => {
