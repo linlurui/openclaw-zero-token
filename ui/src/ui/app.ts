@@ -382,6 +382,9 @@ export class OpenClawApp extends LitElement {
   @state() accessor askonceSelectedModels: string[] = [];
 
   client: GatewayBrowserClient | null = null;
+  connectGeneration = 0;
+  clientInstanceId = generateUUID();
+  serverVersion: string | null = null;
   private chatScrollFrame: number | null = null;
   private chatScrollTimeout: number | null = null;
   private chatHasAutoScrolled = false;

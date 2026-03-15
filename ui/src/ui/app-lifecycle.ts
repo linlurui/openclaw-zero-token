@@ -45,16 +45,24 @@ type LifecycleHost = {
 export function handleConnected(host: LifecycleHost) {
   const connectGeneration = ++host.connectGeneration;
   host.basePath = inferBasePath();
+  console.log("[DEBUG handleConnected] basePath:", host.basePath);
   applySettingsFromUrl(host as unknown as Parameters<typeof applySettingsFromUrl>[0]);
+  const hostWithSettings = host as unknown as { settings: { gatewayUrl: string; token: string } };
+  console.log("[DEBUG handleConnected] settings:", {
+    gatewayUrl: hostWithSettings.settings?.gatewayUrl,
+    hasToken: !!hostWithSettings.settings?.token,
+  });
   const bootstrapReady = loadControlUiBootstrapConfig(host);
   syncTabWithLocation(host as unknown as Parameters<typeof syncTabWithLocation>[0], true);
   syncThemeWithSettings(host as unknown as Parameters<typeof syncThemeWithSettings>[0]);
   attachThemeListener(host as unknown as Parameters<typeof attachThemeListener>[0]);
   window.addEventListener("popstate", host.popStateHandler);
   void bootstrapReady.finally(() => {
+    console.log("[DEBUG bootstrapReady.finally] connectGeneration:", connectGeneration, "current:", host.connectGeneration);
     if (host.connectGeneration !== connectGeneration) {
       return;
     }
+    console.log("[DEBUG calling connectGateway]");
     connectGateway(host as unknown as Parameters<typeof connectGateway>[0]);
   });
   startNodesPolling(host as unknown as Parameters<typeof startNodesPolling>[0]);

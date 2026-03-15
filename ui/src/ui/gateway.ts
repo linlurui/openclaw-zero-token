@@ -172,12 +172,18 @@ export class GatewayBrowserClient {
 
   private connect() {
     if (this.closed) {
+      console.log("[DEBUG connect] closed, skipping");
       return;
     }
+    console.log("[DEBUG connect] creating WebSocket to:", this.opts.url);
     this.ws = new WebSocket(this.opts.url);
-    this.ws.addEventListener("open", () => this.queueConnect());
+    this.ws.addEventListener("open", () => {
+      console.log("[DEBUG WebSocket open]");
+      this.queueConnect();
+    });
     this.ws.addEventListener("message", (ev) => this.handleMessage(String(ev.data ?? "")));
     this.ws.addEventListener("close", (ev) => {
+      console.log("[DEBUG WebSocket close] code:", ev.code, "reason:", ev.reason);
       const reason = String(ev.reason ?? "");
       const connectError = this.pendingConnectError;
       this.pendingConnectError = undefined;
@@ -327,18 +333,38 @@ export class GatewayBrowserClient {
       .then((hello) => {
         this.pendingDeviceTokenRetry = false;
         this.deviceTokenRetryBudgetUsed = false;
+        console.log("[DEBUG connect success]", {
+          hasDeviceToken: !!hello?.auth?.deviceToken,
+          deviceToken: hello?.auth?.deviceToken,
+          hasDeviceIdentity: !!deviceIdentity,
+          deviceId: deviceIdentity?.deviceId,
+        });
         if (hello?.auth?.deviceToken && deviceIdentity) {
+          console.log("[DEBUG storing device token]", {
+            deviceId: deviceIdentity.deviceId,
+            role: hello.auth.role ?? role,
+          });
           storeDeviceAuthToken({
             deviceId: deviceIdentity.deviceId,
             role: hello.auth.role ?? role,
             token: hello.auth.deviceToken,
             scopes: hello.auth.scopes ?? [],
           });
+          console.log("[DEBUG device auth after store]", {
+            stored: localStorage.getItem("openclaw.device.auth.v1"),
+          });
         }
         this.backoffMs = 800;
         this.opts.onHello?.(hello);
       })
       .catch((err: unknown) => {
+        console.log("[DEBUG connect error]", {
+          error: err,
+          message: err instanceof Error ? err.message : String(err),
+          isGatewayRequestError: err instanceof GatewayRequestError,
+          details: err instanceof GatewayRequestError ? err.details : undefined,
+          gatewayCode: err instanceof GatewayRequestError ? err.gatewayCode : undefined,
+        });
         const connectErrorCode =
           err instanceof GatewayRequestError ? resolveGatewayErrorDetailCode(err) : null;
         const recoveryAdvice =
@@ -457,12 +483,14 @@ export class GatewayBrowserClient {
   }
 
   private queueConnect() {
+    console.log("[DEBUG queueConnect]");
     this.connectNonce = null;
     this.connectSent = false;
     if (this.connectTimer !== null) {
       window.clearTimeout(this.connectTimer);
     }
     this.connectTimer = window.setTimeout(() => {
+      console.log("[DEBUG queueConnect timeout, calling sendConnect]");
       void this.sendConnect();
     }, 750);
   }
