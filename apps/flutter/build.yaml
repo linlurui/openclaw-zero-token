@@ -1,0 +1,19 @@
+targets:
+  $default:
+    builders:
+      freezed:
+        options:
+          union_key: 'type'
+          union_key_case: snake
+      json_serializable:
+        options:
+          explicit_to_json: true
+          field_rename: snake
+
+builders:
+  freezed:
+    import: "package:freezed_annotation/builder.dart"
+    builder_factories: ["freezedBuilder"]
+    build_extensions: {".dart": [".freezed.dart"]}
+    auto_apply: dependents
+    build_to: source
